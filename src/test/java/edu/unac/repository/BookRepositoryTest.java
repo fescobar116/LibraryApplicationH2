@@ -1,12 +1,14 @@
 package edu.unac.repository;
 
 import edu.unac.domain.Book;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +27,13 @@ class BookRepositoryTest {
         bookRepository = new BookRepository(connection);
     }
 
+    @AfterEach
+    void tearDown() throws SQLException {
+        connection.prepareStatement(
+                "TRUNCATE TABLE books"
+        ).executeUpdate();
+    }
+
     @Test
     void saveBook() throws SQLException {
         //Arrange
@@ -40,11 +49,31 @@ class BookRepositoryTest {
 
     @Test
     void notFoundBook() throws SQLException {
+        //Arrange
         Book book = new Book("2", "Scrum");
 
         bookRepository.save(book);
 
-        Optional<Book> response = bookRepository.findById("1");
+        //Act
+        Optional<Book> response = bookRepository.findById("78");
+
+        //Assert
         assertFalse(response.isPresent());
+    }
+
+    @Test
+    void findAll() throws SQLException {
+        //Arrange
+        Book book = new Book("3", "Clean code");
+        bookRepository.save(book);
+
+        Book bookTwo = new Book("4", "Scrum");
+        bookRepository.save(bookTwo);
+
+        //Act
+        List<Book> bookList = bookRepository.findAll();
+
+        //Assert
+        assertEquals(2, bookList.size());
     }
 }
