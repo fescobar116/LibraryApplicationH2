@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import javax.swing.text.html.Option;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -55,7 +56,7 @@ class BookRepositoryTest {
         bookRepository.save(book);
 
         //Act
-        Optional<Book> response = bookRepository.findById("78");
+        Optional<Book> response = bookRepository.findById("1");
 
         //Assert
         assertFalse(response.isPresent());
@@ -75,5 +76,24 @@ class BookRepositoryTest {
 
         //Assert
         assertEquals(2, bookList.size());
+    }
+
+    @Test
+    void findByTitle() throws SQLException {
+        //Arrange
+        Book book = new Book("1", "Software Usability 2");
+        bookRepository.save(book);
+
+        //Act
+        Optional<Book> response = bookRepository.findByTitle("Software Usability 2");
+
+        //Assert
+        assertTrue(response.isPresent());
+        assertEquals("Software Usability 2", response.get().getTitle());
+    }
+
+    @Test
+    void findByTitleNotFound(){
+
     }
 }
